@@ -4,9 +4,9 @@ This project provides a brief explanation as to why you might want to create new
 
 ### What are Private Keys and Seed Words?
 
-A private key is essentially a very large random number in a particular format that can create a wallet. A private key is used to sign transactions, and to derive all addresses and public keys for that wallet. It must be stored securely and kept private, as anyone knowing the private key can restore a wallet and have complete access to the funds in it.
+A private key is essentially a very large random number in a particular format. A private key is used to restore wallets, sign transactions, and to derive all addresses and public keys for that wallet. It must be stored securely and kept private, as anyone knowing the private key can restore a wallet and have complete access to the funds in it.
 
-To make it easier for users to record their private keys, standards have been adopted to convert that very large number into a series of mneumonic seed words, usually 12-24 words in length. Wallets can often be restored using either the private key or the seed words, as they represent the same value.
+To make it easier for users to record their private keys, standards (like BIP39) have been adopted to convert that very large number into a series of mneumonic seed words, usually 12-24 words in length. Wallets can often be restored using either the private key or the seed words, as they represent the same value. Be aware the the seed words alone may not be enough alone to restore your wallet, especially if you switch to different wallet software. In addition to recording your wallet seed words, also record the [derivation path the wallet uses](https://walletsrecovery.org/).
 
 ### Where Does That Random Number Come From?
 
@@ -14,15 +14,17 @@ Wallet software usually [generates the large random number](https://en.wikipedia
 
 ### Using Your Own Entropy (Randomness)
 
-Generating your own entropy for use in a new wallet can be done with a variety of methods, including coin flips, dice rolls and card decks. Most wallet software does not allow you to input your own entropy, but it is possible using the following methods. Ideally, you would create your seed words with one of these methods, restore a wallet using those seed words in your preferred wallet software, and then verify that all the keys and addresses match by restoring with even different software. For maximum security, these should only be performed on OFFLINE computers, preferably on a system like [Tails](https://tails.boum.org/).
+Generating your own entropy for use in a new wallet can be done with a variety of methods, including drawing from a hat, coin flips, dice rolls and card decks. Most wallet software does not allow you to input your own entropy, but it is possible using the following methods. Ideally, you would create your seed words with one of these methods, restore a wallet using those seed words in your preferred wallet software, and then verify that all the keys and addresses match by restoring with even different software. For maximum security, these should only be performed on OFFLINE computers, preferably on a system like [Tails](https://tails.boum.org/).
 
-* **[Ian Coleman BIP39](https://iancoleman.io/bip39/)** - the swiss army knife of converters. Make sure to download [`bip39-standalone.html`](https://github.com/iancoleman/bip39) and run it OFFLINE. Clicking the "Show entropy details" box allows you to enter your own entropy from a variety of sources. You can also use this to see the address and public keys that belong to a set of seed words, which can be compared with what your wallet shows.
+* **Draw Words From a Hat** - if you mix all the words from the [BIP39 word list](https://github.com/bitcoin/bips/blob/master/bip-0039/english.txt), you could create your own 24 word seed by randomly picking 23 words (with replacement), and then using a computer to calculate the final seed word in the terminal ([see ArmanTheParman](https://armantheparman.com/bitcoin-seed-with-dice/) below) or using the [SeedPicker web page](https://seedpicker.net/calculator/last-word.html).
+
+* **[Ian Coleman BIP39](https://iancoleman.io/bip39/)** - the Swiss Army knife of converters. Make sure to download [`bip39-standalone.html`](https://github.com/iancoleman/bip39) and run it OFFLINE. Clicking the "Show entropy details" box allows you to enter your own entropy from a variety of sources. You can also use this to see the address and public keys that belong to a set of seed words, which can be compared with what your wallet shows. Also allows you to choose between a variety of [derivation paths](https://walletsrecovery.org/).
 
 * **[ArmanTheParman](https://armantheparman.com/bitcoin-seed-with-dice/)** - detailed article describing exacly how a large binary number is converted into BIP39 seed words. Use D6 dice to create entropy, then determine the seed words, and a computer is only needed at the very end to calculate the final seed word.
 
 * **[ColdCard and D6 Dice](https://coldcardwallet.com/docs/verifying-dice-roll-math)** - new wallets can be created on a ColdCard hardware wallet by entering a series of D6 dice rolls. Those same dice rolls can also be input into a very simple python script [`rolls.py`](https://coldcardwallet.com/docs/rolls.py) that calculates seed words, and you can verify that the seed words match.
 
-* **[This Project](https://github.com/RaskaRuby/createSeedWords)** - expands on [`rolls.py`](https://coldcardwallet.com/docs/rolls.py) by allowing more types of input, including binary coins and hexadecimal [D16 dice](https://github.com/Samourai-Wallet/hexadecimal-die), as well as Monero support. No extra python libraries are needed, so these scripts can be run almost anywhere, and should be fairly readable to beginning python programmers.
+* **[This Project](https://github.com/RaskaRuby/createSeedWords)** - mostly an exercise for myself, but expands on [`rolls.py`](https://coldcardwallet.com/docs/rolls.py) by allowing more types of input, including binary (coins) and hexadecimal [D16 dice](https://github.com/Samourai-Wallet/hexadecimal-die), as well as Monero support. No extra python libraries are needed, so these scripts can be run almost anywhere, and should be fairly readable to beginning python programmers.
 
 ### Python Scripts
 
