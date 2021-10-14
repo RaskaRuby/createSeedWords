@@ -20,7 +20,7 @@ Generating your own entropy for use in a new wallet can be done with a variety o
 
 * **[ArmanTheParman](https://armantheparman.com/bitcoin-seed-with-dice/)** - detailed article describing exacly how to use D6 dice to create seed words by hand, and a computer is only needed at the very end to calculate the final seed word.
 
-* **[ColdCard and D6 Dice](https://coldcardwallet.com/docs/verifying-dice-roll-math)** - new wallets can be created on a ColdCard hardware wallet by entering a series of D6 dice rolls. Those same dice rolls can also be input into a very simple python script [`rolls.py`](https://coldcardwallet.com/docs/rolls.py) that calculates seed words, and you can verify that the seed words match.
+* **Hardware Wallets** - both [ColdCard](https://coldcardwallet.com/docs/verifying-dice-roll-math) and [SeedSigner](https://seedsigner.com/) allow new wallets to be created using user entropy from D6 dice rolls. Coldcard also provides a very simple python script [`rolls.py`](https://coldcardwallet.com/docs/rolls.py) that does the same function so you can verify that the seed words match.
 
 * **[Ian Coleman BIP39](https://iancoleman.io/bip39/)** - the Swiss Army knife of converters. Make sure to download [`bip39-standalone.html`](https://github.com/iancoleman/bip39) and run it OFFLINE. Clicking the "Show entropy details" box allows you to enter your own entropy from a variety of sources. You can also use this to see the address and public keys that belong to a set of seed words, which can be compared with what your wallet shows. Also allows you to choose between a variety of [derivation paths](https://walletsrecovery.org/).
 
