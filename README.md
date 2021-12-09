@@ -28,17 +28,18 @@ Generating your own entropy for use in a new wallet can be done with a variety o
 
 ### Python Scripts
 
-* [`createSeedWordsBTC.py`](https://github.com/RaskaRuby/createSeedWords/blob/master/createSeedWordsBTC.py) - Creates bitcoin BIP39 seed words. Verify results by running [`bip39-standalone.html`](https://github.com/iancoleman/bip39) OFFLINE. Enter created seed words, Show Entropy Details, and the hex entropy should match.
+* [`createSeedWordsBTC.py`](https://github.com/RaskaRuby/createSeedWords/blob/master/createSeedWordsBTC.py) - Creates bitcoin BIP39 seed words. Verify results by running [`bip39-standalone.html`](https://github.com/iancoleman/bip39) OFFLINE. Show Entropy Details, use Raw Entropy, and the entropy should generate the same seed words.
 * [`createSeedWordsXMR.py`](https://github.com/RaskaRuby/createSeedWords/blob/master/createSeedWordsXMR.py) - Creates Monero seed words. Verify results by running [`monero-wallet-cli`](https://getmonero.org) OFFLINE, restoring from seed words, and comparing the secret spend keys.
 
 ### Usage
 
 **WARNING** - For maximum security, run only on a secure OFFLINE system like [Tails](https://tails.boum.org/). Revealing any of the user entropy, seed words or keys generated could allow theft of the wallet.
 
-The following user input is supported to create 256 bits of entropy:
+The following user input is supported, and requires exactly 128, 160, 192, 224 or 256 bits of entropy (12-24 seed words):
 
-* **Binary** [0,1] - requires exactly 256 coin flips, or D6 dice rolls where 1-3 is a zero, and 4-6 is a one
-* **Regular D6 Dice** [1-6] - any number dice rolls (50+ is safe), hashed to 256 bits (This is the ColdCard [`rolls.py`](https://coldcardwallet.com/docs/rolls.py) method)
-* **Hexadecimal [D16 Dice](https://github.com/Samourai-Wallet/hexadecimal-die)** [0-9,a-f,A-F] - requires exactly 64 hexadecimal characters
-* **No Input** (not recommended) - uses python PRNG urandom(32)
+* **No Input** - python PRNG urandom(32) makes 256 bits (NOT RECOMMENDED)
+* **Binary** [0,1] - coin flips, or D6 dice rolls where 1-3 is a zero, and 4-6 is a one
+* **Regular D6 Dice** [1-6] - Ian Coleman style with bias removal, 1.67 bits entropy per roll
+* **Hexadecimal [D16 Dice](https://github.com/Samourai-Wallet/hexadecimal-die)** [0-9,a-f,A-F] - 4 bits per character, 32 chars -> 12 words, 64 chars -> 24 words
+
 
