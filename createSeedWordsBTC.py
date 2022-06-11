@@ -46,6 +46,9 @@ def printUsage():
 	print("   Dice-6 [1-6]         : Ian Coleman style with bias removal, 1.67 bits per roll")
 	print("   Dice-16 [0-9,a-f,A-F]: 4 bits per character, 32 chars -> 12 words, 64 chars -> 24 words")
 	print()
+	print("                              32                              64                                                             128")
+	print("---------|---------|---------|-*-------|---------|---------|---*-----|---------|---------|---------|---------|---------|-------*")
+	print()
 
 
 def printResults(hexString, seedWordsArray):
