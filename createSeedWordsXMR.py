@@ -75,11 +75,15 @@ def printUsage():
 	print("   DICE-6 [1-6]         : any number dice rolls (50+ is safe), hashed to 256 bits")
 	print("   DICE-16 [0-9,a-f,A-F]: exactly 64 hexadecimal characters")
 	print()
+	print("                                                              64                                                             128")
+	print("---------|---------|---------|---------|---------|---------|---*-----|---------|---------|---------|---------|---------|-------*")
+	print()
 
 
 def printOutput(hexInputString, seedWordsArray, secretSpendKey):
-	print("SECRET SPEND KEY  : " + secretSpendKey)
-	print("XMR SEED WORDS(" + str(len(seedWordsArray)) + "): " + ' '.join('%s' % (val) for i, val in enumerate(seedWordsArray)))
+	print("address0: ")
+	print("secretSpendKey: " + secretSpendKey)
+	print("seed: " + ' '.join('%s' % (val) for i, val in enumerate(seedWordsArray)))
 	#print('\n'.join('%3d: %s' % (i+1, val) for i, val in enumerate(seedWordsArray)))	# print numbered seed words on separate lines
 	#print("Entropy         : " + hexInputString)
 

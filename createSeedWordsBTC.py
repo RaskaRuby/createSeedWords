@@ -54,7 +54,8 @@ def printUsage():
 def printResults(hexString, seedWordsArray):
 	print("RaW Hex: " + hexString)
 	print()
-	print("BIP39 Seed Words(" + str(len(seedWordsArray)) + "): " + ' '.join('%s' % (val) for i, val in enumerate(seedWordsArray)))
+	print("address0: ")
+	print("seed: " + ' '.join('%s' % (val) for i, val in enumerate(seedWordsArray)))
 	#print('\n'.join('%3d: %s' % (i+1, val) for i, val in enumerate(seedWordsArray)))	# print numbered seed words on separate lines
 	print()
 
