@@ -28,7 +28,7 @@ Generating your own entropy for use in a new wallet can be done with a variety o
 
 ### Python Scripts
 
-* [`createSeedWordsBTC.py`](https://github.com/RaskaRuby/createSeedWords/blob/master/createSeedWordsBTC.py) - Creates bitcoin BIP39 seed words. Verify your results by running [`bip39-standalone.html`](https://github.com/iancoleman/bip39) OFFLINE, then Show Entropy Details. Paste your Hex Entropy value into Raw Entropy, and the generated seed words should match.
+* [`createSeedWordsBTC.py`](https://github.com/RaskaRuby/createSeedWords/blob/master/createSeedWordsBTC.py) - Creates bitcoin BIP39 seed words. Verify your results by running [`bip39-standalone.html`](https://github.com/iancoleman/bip39) OFFLINE, then Show Entropy Details. Paste your Hex Entropy output value into the Entropy field, and the generated seed words should match.
 * [`createSeedWordsXMR.py`](https://github.com/RaskaRuby/createSeedWords/blob/master/createSeedWordsXMR.py) - Creates Monero seed words. Verify results by running [`monero-wallet-cli`](https://getmonero.org) OFFLINE, restoring from seed words, and comparing the secret spend keys.
 
 ### Usage
