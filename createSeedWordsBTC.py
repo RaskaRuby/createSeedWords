@@ -18,6 +18,15 @@
 #   Hex   : 6d1b46d1b46d1b46d1b46d1b46d1b46d1b46d1b46d1b46d1b46d1b46d1b46d1b
 #   Words : home surface refuse hand spider pet egg misery brave custom home surface refuse hand spider pet egg misery brave custom home surface refuse legend
 #
+# entropia 11: baco baco baco baco baco baco baco baco baco baco baco
+# BIP39 12: bacon bacon bacon bacon bacon bacon bacon bacon bacon bacon bacon absurd
+#
+# entropia 23: baco baco baco baco baco baco baco baco baco baco baco baco baco baco baco baco baco baco baco baco baco baco baco
+# BIP39 24: bacon bacon bacon bacon bacon bacon bacon bacon bacon bacon bacon bacon bacon bacon bacon bacon bacon bacon bacon bacon bacon bacon bacon bacon
+#
+# entropia 23: top trai garl powe bamb frie carg sun came lake cour unco post endl riva fore beco juic sola dry ring exot sign
+# bip39 24: top train garlic power bamboo friend cargo sun camera lake course uncover post endless rival forest become juice solar dry ring exotic sign accuse
+#
 
 import binascii		# hex - byte conversions
 import hashlib		# sha256
@@ -32,19 +41,16 @@ abandon ability able about above absent absorb abstract absurd abuse access acci
 
 
 def printUsage():
-	print("Usage  : Create BIP39 seed words from user-provided raw entropy")
-	print("         Entropy bit count makes (seed words): 128 bits (12 words), 160 (15), 192 (18), 224 (21), 256 bits (24 words)")
-	print("         Entropy bits must be exactly 128 bits (minimum), 160, 192, 224 or 256 (maximum)")
-	print("WARNING: For maximum security, run only on a secure OFFLINE system like Tails")
-	print("         Revealing any of the below data could allow theft of wallet")
-	print("Verify : Run bip39-standalone.html OFFLINE (https://github.com/iancoleman/bip39)")
-	print("         Show entropy details, Use Raw Entropy, and enter entropy")
-	print("         Seed words should match those generated here")
-	print("Input  : any of these formats")
-	print("   None                 : python pseudo-random number generator urandom(32) makes 256 bits (NOT RECOMMENDED)")
-	print("   Binary [0,1]         : coin flips, etc.")
-	print("   Dice-6 [1-6]         : Ian Coleman style with bias removal, 1.67 bits per roll")
-	print("   Dice-16 [0-9,a-f,A-F]: 4 bits per character, 32 chars -> 12 words, 64 chars -> 24 words")
+	print()
+	print("WARNING - run only on a secure OFFLINE system like Tails, as revealing any of this data allows theft of wallet.")
+	print("   For more details, see https://github.com/RaskaRuby/createSeedWords")
+	print()
+	print("Enter random data from any of these formats to generate BIP39 seed words:")
+	print("   None                 : uses a pseudo-random number (python urandom(32)), 256 bits -> 24 words")
+	print("   Seed Words           : 11-23 space-separated seed words. Computes final checksum word. Supports shortened 3-4 letter words.")
+	print("   Binary [0,1]         : coin flips, etc., 128-256 bits -> 12-24 words")
+	print("   Dice-6 [1-6]         : Ian Coleman style w/bias removal, 1.67 bits per roll, 128-256 bits -> 12-24 words")
+	print("   Dice-16 [0-9,a-f,A-F]: 4 bits per character, 32-64 chars -> 12-24 words")
 	print()
 	print("                              32                              64                                                             128")
 	print("---------|---------|---------|-*-------|---------|---------|---*-----|---------|---------|---------|---------|---------|-------*")
@@ -52,11 +58,13 @@ def printUsage():
 
 
 def printResults(hexString, seedWordsArray):
-	print("RaW Hex: " + hexString)
+	print("Hex Entropy: " + hexString)
 	print()
-	print("address0: ")
-	print("seed: " + ' '.join('%s' % (val) for i, val in enumerate(seedWordsArray)))
-	#print('\n'.join('%3d: %s' % (i+1, val) for i, val in enumerate(seedWordsArray)))	# print numbered seed words on separate lines
+	print('BIP39 SEED WORDS')
+	print()
+	print(' '.join('%s' % (val) for i, val in enumerate(seedWordsArray)))	# print seeds on one line
+	print()
+	print('\n'.join('%2d: %s' % (i+1, val) for i, val in enumerate(seedWordsArray)))	# print numbered seeds on separate lines
 	print()
 
 
@@ -73,43 +81,15 @@ def isD6String(string):
 
 
 def isHexString(string):
-    charRe = re.compile(r'[^a-fA-F0-9.]')
+    charRe = re.compile(r'[^a-f0-9.]')
     string = charRe.search(string)
     return not bool(string)
 
 
-# Truncate binary string to greater of length 256, 224, 192, 160, or 128
-# Do nothing if less than 128
-def truncateBinaryString(binaryString):
-	strLen = len(binaryString)
-	if strLen > 255:
-		binaryString = binaryString[0:256]
-	elif strLen > 223:
-		binaryString = binaryString[0:224]
-	elif strLen > 191:
-		binaryString = binaryString[0:192]
-	elif strLen > 159:
-		binaryString = binaryString[0:160]
-	elif strLen > 127:
-		binaryString = binaryString[0:128]
-	return binaryString
-
-
-# Truncate hex string to greater of length 32, 40, 48, 56, or 64
-# Do nothing if less than 32
-def truncateHexString(hexString):
-	strLen = len(hexString)
-	if strLen > 63:
-		hexString = hexString[0:64]
-	elif strLen > 55:
-		hexString = hexString[0:56]
-	elif strLen > 47:
-		hexString = hexString[0:48]
-	elif strLen > 39:
-		hexString = hexString[0:40]
-	elif strLen > 31:
-		hexString = hexString[0:32]
-	return hexString
+def isSeedWords(string):
+    charRe = re.compile(r'[^a-z.]')
+    string = charRe.search(string)
+    return not bool(string)
 
 
 # ian coleman method to remove bias from D6 rolls
@@ -133,34 +113,38 @@ def removeBiasFromBase6(base6String):
 
 def main():
 
-	printUsage()
-
-	# Read input
-	inputString = input().strip()				# remove leading and trailing whitespace
-	inputString = inputString.replace(" ","")	# remove any spaces (Ian Coleman Raw Binary has spaces in it)
-	print()
-
 	# Make sure word list has the correct number of words
 	wordListLen = len(wordListArray)
 	if wordListLen != wordListCount:
 		print("ERROR - wordListArray should contain " + str(wordListCount) + " words, and it instead contains  " + str(wordListLen))
 		return
 
+	printUsage()
+	print()
+
+	# Read input
+	inputString = input().strip().lower()		# remove leading and trailing whitespace, and make lowercase
+	inputWords = inputString.split(" ")			# split space separated string into a list of words
+	inputWordsCount = len(inputWords)
+
+	inputString = inputString.replace(" ","")	# remove any spaces (Ian Coleman Raw Binary has spaces in it)
+
 	# Validate input string, and convert it to a hex string
 	hexString = ''
 	inputLen = len(inputString)
+	print()
+
 	if inputLen == 0:
 
 		hexString = os.urandom(32).hex()
-		print("Input: Random (256 bits)  NOT RECOMMENDED")
+		print("Input Type : python pseudo-random number (256 bits)")
 
 	elif isBinaryString(inputString):
 
 		binaryString = inputString
-		#binaryString = truncateBinaryString(binaryString)
 		binaryLen = len(binaryString)
 		if binaryLen == 128 or binaryLen == 160 or binaryLen == 192 or binaryLen == 224 or binaryLen == 256:
-			print("Input: Binary (" + str(binaryLen) + " bits): " + binaryString)
+			print("Input Type : binary (" + str(binaryLen) + " bits)")
 			hexString = hex(int(inputString, 2))	# convert binary string to hex
 			hexString = hexString[2:]			# remove leading '0x' added by hex()
 		else:
@@ -176,29 +160,70 @@ def main():
 		# convert D6 to Base6, remove bias and truncate
 		base6String = inputString.replace('6', '0')
 		binaryString = removeBiasFromBase6(base6String)
-		#binaryString = truncateBinaryString(binaryString)
 		binaryLen = len(binaryString)
 
 		if binaryLen == 128 or binaryLen == 160 or binaryLen == 192 or binaryLen == 224 or binaryLen == 256:
-			print("Input: Dice-6 (" + str(inputLen) + " rolls)")
-			print("Raw Binary (" + str(binaryLen) + " bits): " + binaryString)
+			print("Input Type : Dice-6 (" + str(inputLen) + " rolls)")
 			hexString = hex(int(binaryString, 2))	# convert binary string to hex
 			hexString = hexString[2:]			# remove leading '0x' added by hex()
 		else:
 			print("ERROR - Dice-6 bit count is " + str(binaryLen) + ", but must only be [128,160,192,224,256].")
 			return
 
-	elif isHexString(inputString):
+	elif isHexString(inputString) and inputWordsCount < 2:
 
 		hexString = inputString
-		#hexString = truncateHexString(hexString)
 		hexLen = len(hexString)
 
 		if hexLen == 32 or hexLen == 40 or hexLen == 48 or hexLen == 56 or hexLen == 64:
-			print("Input: Dice-16 (" + str(hexLen*4) + " bits)")
+			print("Input Type : Dice-16 (" + str(hexLen*4) + " bits)")
 		else:
 			print("ERROR - Hex input length is " + str(hexLen) + ", but must only be [32,40,48,56,64].")
 			return
+
+	elif isSeedWords(inputString) and inputWordsCount > 1:
+
+		# Validate inputWordArrayLen
+		if inputWordsCount != 11 and inputWordsCount != 14 and inputWordsCount != 17 and inputWordsCount != 20 and inputWordsCount != 23:
+			print("ERROR: "  + str(inputWordsCount) +" seed words entered, but must be 11, 14, 17, 20 or 23")
+			return
+
+		# Build seedWordsArray from inputWords
+		seedWordsArray = []
+		binaryString = ""
+		for inputWord in inputWords:
+			# find inputWord in wordListArray
+			found = False
+			for wordIndex, word in enumerate(wordListArray):
+				if word.startswith(inputWord):
+					found = True
+					# add seed word to list
+					seedWordsArray.append(word)
+					# append 11 bit binary wordIndex to binaryString
+					binaryString += format(wordIndex, '011b')
+					break
+			if found != True:
+				print("ERROR: **" + inputWord + "** is not a valid seed word")
+				return
+
+		print("Input Type : " + str(inputWordsCount) + "seed words (will compute final checksum word)")
+
+		# pad binaryString out to its complete length (128, 160, 192, 224 or 256 bits)
+		# could be any random data, but I'm just using zeros for simplicity
+		if inputWordsCount == 11:
+			binaryString += '0000000'	# 11 * 11 == 121, so need 7 bits to make 128
+		elif inputWordsCount ==14:
+			binaryString += '000000'	# 14 * 11 == 154, so need 6 bits to make 160
+		elif inputWordsCount ==17:
+			binaryString += '00000'		# 17 * 11 == 187, so need 5 bits to make 192
+		elif inputWordsCount ==20:
+			binaryString += '0000'		# 20 * 11 == 120, so need 4 bits to make 224
+		else:
+			binaryString += '000'		# 23 * 11 == 253, so need 3 bits to make 256
+
+		# convert binaryString to hexString, and remove leading '0x' added by hex()
+		hexString = hex(int(binaryString, 2))[2:]
+
 	else:
 
 		print("ERROR - Unknown input character - must be [0-9,a-f,A-F] or none")
