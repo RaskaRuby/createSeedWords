@@ -130,23 +130,20 @@ def main():
 	inputString = inputString.replace(" ","")	# remove any spaces (Ian Coleman Raw Binary has spaces in it)
 
 	# Validate input string, and convert it to a hex string
-	hexString = ''
+	entropyHexString = ''
 	inputLen = len(inputString)
 	print()
 
 	if inputLen == 0:
 
-		hexString = os.urandom(32).hex()
+		entropyHexString = os.urandom(32).hex()
 		print("Input Type : python pseudo-random number (256 bits)")
 
 	elif isBinaryString(inputString):
 
-		binaryString = inputString
-		binaryLen = len(binaryString)
-		if binaryLen == 128 or binaryLen == 160 or binaryLen == 192 or binaryLen == 224 or binaryLen == 256:
-			print("Input Type : binary (" + str(binaryLen) + " bits)")
-			hexString = hex(int(inputString, 2))	# convert binary string to hex
-			hexString = hexString[2:]			# remove leading '0x' added by hex()
+		if inputLen == 128 or inputLen == 160 or inputLen == 192 or inputLen == 224 or inputLen == 256:
+			print("Input Type : binary (" + str(inputLen) + " bits)")
+			entropyHexString = hex(int(inputString, 2))[2:]	# convert binary to hex string, removing leading '0x' added by hex()
 		else:
 			print("ERROR - Binary bits " + str(inputLen) + ", but must only be [128,160,192,224,256].")
 			return
@@ -155,7 +152,7 @@ def main():
 
 		# ColdCard method (unused)
 		#print("Input: Dice-6 (" + str(len(inputString)) + " rolls) ColdCard SHA256")
-		#hexString = hashlib.sha256(inputString.encode()).hexdigest()	# hash D6 string to 64 hex chars
+		#entropyHexString = hashlib.sha256(inputString.encode()).hexdigest()	# hash D6 string to 64 hex chars
 
 		# convert D6 to Base6, remove bias and truncate
 		base6String = inputString.replace('6', '0')
@@ -164,21 +161,19 @@ def main():
 
 		if binaryLen == 128 or binaryLen == 160 or binaryLen == 192 or binaryLen == 224 or binaryLen == 256:
 			print("Input Type : Dice-6 (" + str(inputLen) + " rolls)")
-			hexString = hex(int(binaryString, 2))	# convert binary string to hex
-			hexString = hexString[2:]			# remove leading '0x' added by hex()
+			entropyHexString = hex(int(binaryString, 2))[2:]	# convert binary to hex string, removing leading '0x' added by hex()
 		else:
 			print("ERROR - Dice-6 bit count is " + str(binaryLen) + ", but must only be [128,160,192,224,256].")
 			return
 
 	elif isHexString(inputString) and inputWordsCount < 2:
 
-		hexString = inputString
-		hexLen = len(hexString)
+		entropyHexString = inputString
 
-		if hexLen == 32 or hexLen == 40 or hexLen == 48 or hexLen == 56 or hexLen == 64:
-			print("Input Type : Dice-16 (" + str(hexLen*4) + " bits)")
+		if inputLen == 32 or inputLen == 40 or inputLen == 48 or inputLen == 56 or inputLen == 64:
+			print("Input Type : Dice-16 (" + str(inputLen*4) + " bits)")
 		else:
-			print("ERROR - Hex input length is " + str(hexLen) + ", but must only be [32,40,48,56,64].")
+			print("ERROR - Hex input length is " + str(inputLen) + ", but must only be [32,40,48,56,64].")
 			return
 
 	elif isSeedWords(inputString) and inputWordsCount > 1:
@@ -199,53 +194,62 @@ def main():
 					found = True
 					# add seed word to list
 					seedWordsArray.append(word)
-					# append 11 bit binary wordIndex to binaryString
+					# append wordIndex to binaryString in 11 bit binary format
 					binaryString += format(wordIndex, '011b')
 					break
 			if found != True:
 				print("ERROR: **" + inputWord + "** is not a valid seed word")
 				return
 
-		print("Input Type : " + str(inputWordsCount) + "seed words (will compute final checksum word)")
+		print("Input Type : " + str(inputWordsCount) + " seed words (will compute final checksum word)")
 
-		# pad binaryString out to its complete length (128, 160, 192, 224 or 256 bits)
-		# could be any random data, but I'm just using zeros for simplicity
+		# Pad binaryString out to its full length (128, 160, 192, 224 or 256 bits).
+		# Appending zeros here, but could use any random data.
 		if inputWordsCount == 11:
-			binaryString += '0000000'	# 11 * 11 == 121, so need 7 bits to make 128
+			binaryString = binaryString.ljust(128, "0")
 		elif inputWordsCount ==14:
-			binaryString += '000000'	# 14 * 11 == 154, so need 6 bits to make 160
+			binaryString = binaryString.ljust(160, "0")
 		elif inputWordsCount ==17:
-			binaryString += '00000'		# 17 * 11 == 187, so need 5 bits to make 192
+			binaryString = binaryString.ljust(192, "0")
 		elif inputWordsCount ==20:
-			binaryString += '0000'		# 20 * 11 == 120, so need 4 bits to make 224
+			binaryString = binaryString.ljust(224, "0")
 		else:
-			binaryString += '000'		# 23 * 11 == 253, so need 3 bits to make 256
+			binaryString = binaryString.ljust(256, "0")
 
-		# convert binaryString to hexString, and remove leading '0x' added by hex()
-		hexString = hex(int(binaryString, 2))[2:]
+		# convert binary to hex string, removing leading '0x' added by hex()
+		entropyHexString = hex(int(binaryString, 2))[2:]
 
 	else:
 
 		print("ERROR - Unknown input character - must be [0-9,a-f,A-F] or none")
 		return
 
-	# convert hex input string to binary data (a large number)
-	binaryData = binascii.unhexlify(hexString)
+	# convert entropyHexString into bytes (a large number)
+	entropyBytes = binascii.unhexlify(entropyHexString)
+	entropyBytesLen = len(entropyBytes)
 
-	# calculate hash of binary data (used for final checksum word)
-	binaryDataHash = hashlib.sha256(binaryData).hexdigest()
+	# convert entropyHexString to binary string, removing leading b', and zero padding string to the proper bit length
+	entropyBinaryString = bin(int(entropyHexString,16))[2:].zfill(entropyBytesLen*8)
 
-	# append checksum to binary data
-	binaryData = bin(int(binascii.hexlify(binaryData),16))[2:].zfill(len(binaryData)*8) + bin(int(binaryDataHash,16))[2:].zfill(256)[: 	len(binaryData)* 8//32]
+	# Calculate final checksum word
+	# first, calculate the hex string hash of entropyBytes
+	entropyHashHexString = hashlib.sha256(entropyBytes).hexdigest()	# hexdigest() returns string object of double length
+	# next find how many bits of the hash we need to complete an additional 11 bit word
+	# e.g - for 256 bit entropy (24 words), 23 * 11 = 253, so we only have 3 bits remaining for the final word, so we need 8 more
+	extraBitsNeeded = entropyBytesLen*8//32		# floor division returns an int
+	# then convert hash hex into binary string, removing leading b', zfilling, and truncating to leave just the final extra bits
+	extraBitsString = bin(int(entropyHashHexString,16))[2:].zfill(256)[:extraBitsNeeded]
+	# finally, append extraBitsString onto entropyBinaryString
+	entropyBinaryString = entropyBinaryString + extraBitsString
 
-	# convert to seed words
+	# convert entropyBinaryString to seed words
 	seedWordsArray = []
-	for seedWordIndex in range(len(binaryData)//11):
-		wordListIndex = int(binaryData[11*seedWordIndex:11*(seedWordIndex+1)],2)
+	for seedWordIndex in range(len(entropyBinaryString)//11):
+		wordListIndex = int(entropyBinaryString[11*seedWordIndex:11*(seedWordIndex+1)],2)
 		seedWordsArray.append(wordListArray[wordListIndex])
 
 	# print results
-	printResults(hexString, seedWordsArray)
+	printResults(entropyHexString, seedWordsArray)
 	return
 
 
