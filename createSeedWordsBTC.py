@@ -57,7 +57,7 @@ def printUsage():
 	print()
 
 
-def printResults(hexString, seedWordsArray):
+def printResults(hexString, seedWordsArray, seedQRString):
 	print("Hex Entropy: " + hexString)
 	print()
 	print('BIP39 SEED WORDS')
@@ -66,6 +66,8 @@ def printResults(hexString, seedWordsArray):
 	print()
 	print('\n'.join('%2d: %s' % (i+1, val) for i, val in enumerate(seedWordsArray)))	# print numbered seeds on separate lines
 	print()
+	print("For SeedSigner SeedQR run:")
+	print("qrencode -s 6 -l L -v 2 -o output.png '" + seedQRString + "'")
 
 
 def isBinaryString(string):
@@ -244,12 +246,14 @@ def main():
 
 	# convert entropyBinaryString to seed words
 	seedWordsArray = []
+	seedQRString = ''
 	for seedWordIndex in range(len(entropyBinaryString)//11):
 		wordListIndex = int(entropyBinaryString[11*seedWordIndex:11*(seedWordIndex+1)],2)
 		seedWordsArray.append(wordListArray[wordListIndex])
+		seedQRString = seedQRString + str(wordListIndex).zfill(4)
 
 	# print results
-	printResults(entropyHexString, seedWordsArray)
+	printResults(entropyHexString, seedWordsArray, seedQRString)
 	return
 
 

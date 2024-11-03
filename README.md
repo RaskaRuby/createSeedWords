@@ -1,6 +1,6 @@
 ## Create Seed Words
 
-This project provides a brief explanation as to why you might want to create new wallet seed words using your own entropy, and it contains some simple instructions and python scripts to help you do that.
+There are a variety of methods of securing one's wallet's private keys/seed words (hardware wallets, metal backup plates, etc), but another factor to consider is where those private keys/seed words came from, and whether they are truly secure. This project provides a brief explanation as to why you might want to create new wallet seed words using your own entropy, and it contains some simple instructions and python scripts to help you do that. After reading this, you should be able to safely generate your own wallet seed words, find the public key for that wallet, and then import that public key into your own watch-only wallet. This gives you a true cold wallet that you can send funds to while never revealing your wallet's seed words.
 
 ### What are Seed Words?
 
@@ -14,13 +14,20 @@ Wallet software usually [generates the large random number](https://en.wikipedia
 
 ### Using Your Own Entropy (Randomness)
 
-Generating your own entropy for use in a new wallet can be done with a variety of methods, including drawing from a hat, coin flips, dice rolls and card decks. Most wallet software does not allow you to input your own entropy, but it is possible using the following methods. Ideally, you would create your seed words with one of these methods, restore a wallet using those seed words in your preferred wallet software, and then verify that all the public addresses and keys match by restoring with even different software. For maximum security, these should only be performed on OFFLINE computers, preferably on a system like [Tails](https://tails.boum.org/).
+Generating your own entropy for use in a new wallet can be done with a variety of methods, including drawing from a hat, coin flips, dice rolls and card decks. Most wallet software does not allow you to input your own entropy, but it is possible using any of the methods below. [ArmanTheParman](https://armantheparman.com/bitcoin-seed-with-dice/) has a nice step-by-step article on how to do it completely by hand with a D6 dice.
 
-* **Draw Words From a Hat** - if you mix all the words from the [BIP39 word list](https://github.com/bitcoin/bips/blob/master/bip-0039/english.txt), you could create your own n word seed by randomly picking n-1 words (with replacement), then using a computer to find the last seed word. For a nice 3D printed set of seed words, try [Entropia Seed Tablets](https://btc-hardware-solutions.square.site/product/entropia-v2-seed-tablets/11?cs=true&cst=custom). To calculate the final checksum word, see [ArmanTheParman](https://armantheparman.com/bitcoin-seed-with-dice/) below, use [SeedPicker web page](https://seedpicker.net/calculator/last-word.html), or use my [`createSeedWordsBTC.py`](https://github.com/RaskaRuby/createSeedWords/blob/master/createSeedWordsBTC.py) script, which also works with shortened Entropia-style 3-4 letter seed words.
+### Best Practices
 
-* **[ArmanTheParman](https://armantheparman.com/bitcoin-seed-with-dice/)** - detailed article describing exactly how to use D6 dice to create seed words by hand, and a computer is only needed at the very end to calculate the final seed word.
+1. **Use [Tails](https://tails.boum.org/)**, an amnesic Linux operating system that boots from a USB stick. Create your own Tails stick, and create a Persistent partition during setup. Download all the tools below that you like, and copy them onto a separate USB stick. Boot into Tails, and then copy those files into your Persistant folder, with html files going into the Persistent/TorBrowser folder.
+2. **Generate new wallet seed words** using whichever method below you like.
+3. **Find public key (zpub) and addresses** for your seed words.
+4. **Verify public key (zpub) and addresses** by checking them again using another method.
+
+* **Draw Words From a Hat** - if you mix all the words from the [BIP39 word list](https://github.com/bitcoin/bips/blob/master/bip-0039/english.txt), you could create your own n word seed by randomly picking n-1 words (with replacement), then using a computer to calculate the last seed word (which is a checksum of the previous words). If you don't want to cut up all 2048 seed words, then you could buy some [Entropia Seed Tablets](https://btc-hardware-solutions.square.site/product/entropia-v2-seed-tablets/11?cs=true&cst=custom), which are a very nice 3-D printed set. To calculate the final checksum word, use [SeedTool](https://bitcoiner.guide/seed/) below, or use my [`createSeedWordsBTC.py`](https://github.com/RaskaRuby/createSeedWords/blob/master/createSeedWordsBTC.py) script, which also works with shortened Entropia-style 3-4 letter seed words.
 
 * **Hardware Wallets** - both [ColdCard](https://coldcardwallet.com/docs/verifying-dice-roll-math) and [SeedSigner](https://seedsigner.com/) allow new wallets to be created using user entropy from D6 dice rolls. Coldcard also provides a very simple python script [`rolls.py`](https://coldcardwallet.com/docs/rolls.py) that does the same function so you can verify that the seed words match.
+
+* **[Seed Tool](https://bitcoiner.guide/seed/)** - 
 
 * **[Ian Coleman BIP39](https://iancoleman.io/bip39/)** - the Swiss Army knife of converters. Make sure to download [`bip39-standalone.html`](https://github.com/iancoleman/bip39) and run it OFFLINE. Clicking the "Show entropy details" box allows you to enter your own entropy from a variety of sources. You can also use this to see the public addresses and keys that belong to a set of seed words, which can be compared with what your wallet shows. Also allows you to choose between a variety of [derivation paths](https://walletsrecovery.org/).
 
